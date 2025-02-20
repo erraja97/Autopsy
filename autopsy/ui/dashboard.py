@@ -19,7 +19,7 @@ class Dashboard(QWidget):
 
     def initUI(self):
         self.setWindowTitle("Autopsy © Tool")
-        self.setGeometry(100, 100, 600, 600)
+        self.setGeometry(100, 100, 800, 600)
         self.setStyleSheet("background-color: #161D27;")
         self.setWindowIcon(QIcon(ICON_PATH))
         
