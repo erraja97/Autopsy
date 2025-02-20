@@ -74,3 +74,6 @@ Desktop.ini
 
 # PySide6 / Qt generated files (if any)
 *.qrc
+
+# text files
+cmd.txt

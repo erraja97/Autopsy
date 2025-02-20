@@ -70,12 +70,36 @@ def merge_batches(config_data):
             include = file_config["include"]
             exclude = file_config["exclude"]
             pdf_files = sorted(glob.glob(os.path.join(working_dir, pattern)))
+            
+            # Log if no files found for this pattern:
+            if not pdf_files:
+                msg = f"❌ No PDF files found for pattern '{pattern}' in {working_dir}. Skipped."
+                print(msg)
+                results.append(msg)
+                continue
+
             for pdf_file in pdf_files:
+                # Ensure only PDF files are processed:
+                if not pdf_file.lower().endswith(".pdf"):
+                    msg = f"❌ Skipping non-PDF file: {pdf_file}"
+                    print(msg)
+                    results.append(msg)
+                    continue
+
+                # Check if the file exists and is a file:
+                if not os.path.isfile(pdf_file):
+                    msg = f"❌ File not found: {pdf_file}. Skipped."
+                    print(msg)
+                    results.append(msg)
+                    continue
+
                 try:
                     reader = PdfReader(pdf_file)
                 except Exception as e:
-                    results.append(f"❌ Error reading {pdf_file}: {str(e)}")
-                    continue  # Skip to the next file if this one can't be read
+                    msg = f"❌ Error reading {pdf_file}: {str(e)}. Skipped."
+                    print(msg)
+                    results.append(msg)
+                    continue
 
                 total_pages = len(reader.pages)
                 include_pages = parse_page_ranges(include, total_pages) if include else set(range(total_pages))
@@ -85,11 +109,23 @@ def merge_batches(config_data):
                     try:
                         pdf_writer.add_page(reader.pages[page_num])
                     except Exception as e:
-                        results.append(f"❌ Error adding page {page_num+1} of {pdf_file}: {str(e)}")
+                        msg = f"❌ Error adding page {page_num+1} of {pdf_file}: {str(e)}"
+                        print(msg)
+                        results.append(msg)
         try:
             with open(output_path, "wb") as output_pdf:
                 pdf_writer.write(output_pdf)
-            results.append(f"✅ Merged PDF saved: {output_path}")
+            msg = f"✅ Merged PDF saved: {output_path}"
+            print(msg)
+            results.append(msg)
         except Exception as e:
-            results.append(f"❌ Error merging batch {batch['batch_number']}: {str(e)}")
+            msg = f"❌ Error merging batch {batch['batch_number']}: {str(e)}"
+            print(msg)
+            results.append(msg)
+        
+        # Append a divider after processing each batch:
+        divider = "-" * 50
+        print(divider)
+        results.append(divider)
     return results
+
