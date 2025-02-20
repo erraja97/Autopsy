@@ -1,13 +1,14 @@
 import os
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel, QGridLayout, QSpacerItem, QSizePolicy
+from PySide6.QtWidgets import (
+    QWidget, QVBoxLayout, QPushButton, QLabel, QGridLayout, QSpacerItem, QSizePolicy
+)
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont, QColor, QPalette, QPixmap, QIcon
-from autopsy.ui.pdf_batch_tool import PDFBatchTool
 
 VERSION = "1.0.0"
 DEVELOPER = "Raja Gupta"
 
-# Determine assets path (assumes assets are in ../assets relative to autopsy/ui)
+# Determine the assets path (assets folder is at ../assets relative to this file)
 ASSETS_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets")
 ICON_PATH = os.path.join(ASSETS_PATH, "autopsy.ico")
 
@@ -65,11 +66,11 @@ class Dashboard(QWidget):
         icon_label.setStyleSheet("border-radius: 60px;")
         layout.addWidget(icon_label)
 
-        # Spacers
+        # Spacers for separation
         layout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
         layout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
-        # Grid for buttons
+        # Grid layout for tool buttons
         grid_layout = QGridLayout()
         grid_layout.setHorizontalSpacing(20)
         grid_layout.setVerticalSpacing(10)
@@ -90,38 +91,52 @@ class Dashboard(QWidget):
         grid_layout.addWidget(self.btn_automation, 0, 0)
         grid_layout.addWidget(desc_automation, 1, 0)
 
-        # Placeholders for Merge and Compress Tools
-        btn_pdf_merger = QPushButton("PDF Merger Tool (Coming Soon)")
-        btn_pdf_merger.setFont(QFont("Arial", 14, QFont.Weight.Bold))
-        btn_pdf_merger.setEnabled(False)
-        btn_pdf_merger.setStyleSheet(
-            "QPushButton { background-color: #cccccc; color: #666666; border-radius: 10px; padding: 15px; }"
+        # PDF Merger Tool Button
+        self.btn_pdf_merger = QPushButton("PDF Merger Tool")
+        self.btn_pdf_merger.setFont(QFont("Arial", 14, QFont.Weight.Bold))
+        self.btn_pdf_merger.setStyleSheet(
+            "QPushButton { background-color: #4CAF50; color: white; border-radius: 10px; padding: 15px; }"
+            "QPushButton:hover { background-color: #45a049; }"
         )
+        self.btn_pdf_merger.clicked.connect(self.open_pdf_merge_tool)
         desc_pdf_merger = QLabel("Merge multiple PDFs.")
         desc_pdf_merger.setFont(QFont("Arial", 11))
         desc_pdf_merger.setWordWrap(True)
         desc_pdf_merger.setAlignment(Qt.AlignCenter)
         desc_pdf_merger.setStyleSheet("color: white;")
-        grid_layout.addWidget(btn_pdf_merger, 0, 1)
+        grid_layout.addWidget(self.btn_pdf_merger, 0, 1)
         grid_layout.addWidget(desc_pdf_merger, 1, 1)
 
-        btn_pdf_compress = QPushButton("PDF Compress Tool (Coming Soon)")
-        btn_pdf_compress.setFont(QFont("Arial", 14, QFont.Weight.Bold))
-        btn_pdf_compress.setEnabled(False)
-        btn_pdf_compress.setStyleSheet(
-            "QPushButton { background-color: #cccccc; color: #666666; border-radius: 10px; padding: 15px; }"
+        # PDF Compress Tool Button
+        self.btn_pdf_compress = QPushButton("PDF Compress Tool")
+        self.btn_pdf_compress.setFont(QFont("Arial", 14, QFont.Weight.Bold))
+        self.btn_pdf_compress.setStyleSheet(
+            "QPushButton { background-color: #4CAF50; color: white; border-radius: 10px; padding: 15px; }"
+            "QPushButton:hover { background-color: #45a049; }"
         )
+        self.btn_pdf_compress.clicked.connect(self.open_pdf_compress_tool)
         desc_pdf_compress = QLabel("Compress PDFs to reduce file size while maintaining quality.")
         desc_pdf_compress.setFont(QFont("Arial", 11))
         desc_pdf_compress.setWordWrap(True)
         desc_pdf_compress.setAlignment(Qt.AlignCenter)
         desc_pdf_compress.setStyleSheet("color: white;")
-        grid_layout.addWidget(btn_pdf_compress, 2, 0)
+        grid_layout.addWidget(self.btn_pdf_compress, 2, 0)
         grid_layout.addWidget(desc_pdf_compress, 3, 0)
 
         layout.addLayout(grid_layout)
         self.setLayout(layout)
 
     def open_automation_tool(self):
+        from autopsy.ui.pdf_batch_tool import PDFBatchTool
         self.automation_tool = PDFBatchTool()
         self.automation_tool.show()
+
+    def open_pdf_merge_tool(self):
+        from autopsy.ui.pdf_merge_tool import PDFMergeTool
+        self.pdf_merge_tool = PDFMergeTool()
+        self.pdf_merge_tool.show()
+
+    def open_pdf_compress_tool(self):
+        from autopsy.ui.pdf_compress_tool import PDFCompressTool
+        self.pdf_compress_tool = PDFCompressTool()
+        self.pdf_compress_tool.show()
