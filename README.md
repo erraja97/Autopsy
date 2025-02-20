@@ -101,11 +101,12 @@ AutopsyTool/
 
 ## Contributing
 
-Contributions are welcome! Please fork the repository and submit a pull request with your improvements or bug fixes.
+This project is for personal use and is not publicly open for contibution
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is for personal use and is not publicly licensed.
+
 
 ## Contact
 
