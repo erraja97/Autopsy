@@ -21,7 +21,7 @@ class Dashboard(QWidget):
     
     def initUI(self):
         self.setWindowTitle("Autopsy © Tool")
-        self.setGeometry(100, 100, 600, 600)
+        self.setGeometry(100, 100, 700, 600)
         self.setWindowIcon(QIcon(ICON_PATH))
         
         palette = QPalette()
@@ -87,7 +87,7 @@ class Dashboard(QWidget):
         grid_layout.setVerticalSpacing(10)
 
         # Automation (Batch PDF Processing) Button
-        self.btn_automation = QPushButton("Automation Tool (Batch PDF Processing)")
+        self.btn_automation = QPushButton("PDF Batch Processor (Automation)")
         self.btn_automation.setFont(QFont("Arial", 14, QFont.Weight.Bold))
         self.btn_automation.clicked.connect(self.open_automation_tool)
         grid_layout.addWidget(self.btn_automation, 0, 0)

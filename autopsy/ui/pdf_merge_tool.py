@@ -85,7 +85,7 @@ class PDFMergeTool(QWidget):
         for pdf_index, pdf_file in enumerate(self.files_to_merge):
             # PDF Title
             pdf_title = QLabel(f"PDF: {os.path.basename(pdf_file)}", self)
-            pdf_title.setStyleSheet("font-weight: bold; margin-top: 10px; color: white;")
+            # pdf_title.setStyleSheet("font-weight: bold; margin-top: 10px; color: white;")
             self.scroll_layout.addWidget(pdf_title, row, 0, 1, 2)
             row += 1
 
@@ -113,7 +113,7 @@ class PDFMergeTool(QWidget):
                 
                 # Checkbox for page inclusion
                 checkbox = QCheckBox(f"Page {page_num + 1}", self)
-                checkbox.setStyleSheet("color: white;")
+                # checkbox.setStyleSheet("color: white;")
                 checkbox.setChecked(True)
                 checkbox.stateChanged.connect(self.toggle_page_inclusion)
                 
