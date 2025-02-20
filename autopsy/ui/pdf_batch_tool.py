@@ -8,8 +8,11 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
 from autopsy.core.pdf_batch_core import merge_batches  # Core merging function
+from autopsy.utils import resource_path
 
-ICON_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets", "autopsy.ico")
+ASSETS_PATH = resource_path("autopsy/assets")
+ICON_PATH = os.path.join(ASSETS_PATH, "autopsy.ico")
+
 
 class EditConfigDialog(QDialog):
     def __init__(self, config_data, parent=None):

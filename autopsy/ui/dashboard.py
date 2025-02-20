@@ -4,12 +4,13 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont, QColor, QPalette, QPixmap, QIcon
+from autopsy.utils import resource_path
 
 VERSION = "1.0.0"
 DEVELOPER = "Raja Gupta"
 
 # Determine assets path (assets folder is at ../assets relative to this file)
-ASSETS_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets")
+ASSETS_PATH = resource_path("autopsy/assets")
 ICON_PATH = os.path.join(ASSETS_PATH, "autopsy.ico")
 
 class Dashboard(QWidget):

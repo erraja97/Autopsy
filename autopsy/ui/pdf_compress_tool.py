@@ -6,9 +6,9 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
 from autopsy.core.pdf_compress_core import compress_pdf as core_compress_pdf
+from autopsy.utils import resource_path
 
-# Determine assets path
-ASSETS_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets")
+ASSETS_PATH = resource_path("autopsy/assets")
 ICON_PATH = os.path.join(ASSETS_PATH, "autopsy.ico")
 
 class PDFCompressTool(QWidget):

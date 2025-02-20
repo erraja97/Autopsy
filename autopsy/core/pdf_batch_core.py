@@ -71,13 +71,21 @@ def merge_batches(config_data):
             exclude = file_config["exclude"]
             pdf_files = sorted(glob.glob(os.path.join(working_dir, pattern)))
             for pdf_file in pdf_files:
-                reader = PdfReader(pdf_file)
+                try:
+                    reader = PdfReader(pdf_file)
+                except Exception as e:
+                    results.append(f"❌ Error reading {pdf_file}: {str(e)}")
+                    continue  # Skip to the next file if this one can't be read
+
                 total_pages = len(reader.pages)
                 include_pages = parse_page_ranges(include, total_pages) if include else set(range(total_pages))
                 exclude_pages = parse_page_ranges(exclude, total_pages) if exclude else set()
                 pages_to_merge = sorted(include_pages - exclude_pages)
                 for page_num in pages_to_merge:
-                    pdf_writer.add_page(reader.pages[page_num])
+                    try:
+                        pdf_writer.add_page(reader.pages[page_num])
+                    except Exception as e:
+                        results.append(f"❌ Error adding page {page_num+1} of {pdf_file}: {str(e)}")
         try:
             with open(output_path, "wb") as output_pdf:
                 pdf_writer.write(output_pdf)

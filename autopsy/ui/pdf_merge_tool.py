@@ -7,9 +7,9 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtGui import QPixmap, QImage, QIcon
 from PySide6.QtCore import Qt
+from autopsy.utils import resource_path
 
-# Determine the assets path (assumes assets are in ../assets relative to this file)
-ASSETS_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets")
+ASSETS_PATH = resource_path("autopsy/assets")
 ICON_PATH = os.path.join(ASSETS_PATH, "autopsy.ico")
 
 class PDFMergeTool(QWidget):
