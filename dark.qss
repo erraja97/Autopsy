@@ -1,0 +1,26 @@
+/* dark.qss */
+QWidget {
+    background-color: #161D27;
+    color: white;
+}
+
+QLineEdit {
+    background-color: #2C3E50;
+    color: white;
+    border: 1px solid #34495E;
+}
+
+QCheckBox {
+    color: white;
+}
+
+QPushButton {
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+QPushButton:hover {
+    background-color: #45a049;
+}

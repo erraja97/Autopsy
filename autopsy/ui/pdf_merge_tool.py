@@ -22,19 +22,19 @@ class PDFMergeTool(QWidget):
     def initUI(self):
         self.setWindowTitle("PDF Merge Tool")
         self.setGeometry(100, 100, 800, 600)
-        self.setStyleSheet("background-color: #161D27;")
+        # self.setStyleSheet("background-color: #161D27;")
         self.setWindowIcon(QIcon(ICON_PATH))
 
         layout = QVBoxLayout()
 
         # Title
         title_label = QLabel("Merge PDFs", self)
-        title_label.setStyleSheet("color: white; font-size: 20px; font-weight: bold;")
+        # title_label.setStyleSheet("color: white; font-size: 20px; font-weight: bold;")
         layout.addWidget(title_label)
 
         # Description
         desc_label = QLabel("Select PDFs to merge, preview pages, and choose pages to include/exclude.", self)
-        desc_label.setStyleSheet("color: white;")
+        # desc_label.setStyleSheet("color: white;")
         layout.addWidget(desc_label)
 
         # Button to select PDFs
@@ -58,7 +58,7 @@ class PDFMergeTool(QWidget):
 
         # Status label
         self.status_label = QLabel("", self)
-        self.status_label.setStyleSheet("color: white;")
+        # self.status_label.setStyleSheet("color: white;")
         layout.addWidget(self.status_label)
 
         self.setLayout(layout)

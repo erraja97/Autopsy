@@ -20,13 +20,13 @@ class PDFCompressTool(QWidget):
     def initUI(self):
         self.setWindowTitle("PDF Compression Tool")
         self.setGeometry(100, 100, 400, 300)
-        self.setStyleSheet("background-color: #161D27;")
+        # self.setStyleSheet("background-color: #161D27;")
         self.setWindowIcon(QIcon(ICON_PATH))
 
         layout = QVBoxLayout()
 
         self.label = QLabel("Select a PDF to Compress")
-        self.label.setStyleSheet("color: white;")
+        # self.label.setStyleSheet("color: white;")
         layout.addWidget(self.label)
 
         self.btn_select_pdf = QPushButton("Select PDF")
@@ -34,7 +34,7 @@ class PDFCompressTool(QWidget):
         layout.addWidget(self.btn_select_pdf)
 
         self.file_size_label = QLabel("File Size: N/A")
-        self.file_size_label.setStyleSheet("color: white;")
+        # self.file_size_label.setStyleSheet("color: white;")
         layout.addWidget(self.file_size_label)
 
         comp_layout = QHBoxLayout()
@@ -49,7 +49,7 @@ class PDFCompressTool(QWidget):
         layout.addLayout(comp_layout)
 
         self.compression_value_label = QLabel("Compression Level: 60")
-        self.compression_value_label.setStyleSheet("color: white;")
+        # self.compression_value_label.setStyleSheet("color: white;")
         layout.addWidget(self.compression_value_label)
 
         self.btn_compress = QPushButton("Compress PDF")
@@ -61,7 +61,7 @@ class PDFCompressTool(QWidget):
         layout.addWidget(self.progress_bar)
 
         self.compressed_size_label = QLabel("Compressed File Size: N/A")
-        self.compressed_size_label.setStyleSheet("color: white;")
+        # self.compressed_size_label.setStyleSheet("color: white;")
         layout.addWidget(self.compressed_size_label)
 
         self.setLayout(layout)

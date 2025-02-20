@@ -156,7 +156,7 @@ class PDFBatchTool(QWidget):
     def initUI(self):
         self.setWindowTitle("Automation Tool - Batch PDF Processing")
         self.setGeometry(100, 100, 500, 600)
-        self.setStyleSheet("background-color: #161D27;")
+        # self.setStyleSheet("background-color: #161D27;")
         self.setWindowIcon(QIcon(ICON_PATH))
 
         layout = QVBoxLayout()
