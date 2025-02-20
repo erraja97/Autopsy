@@ -101,7 +101,7 @@ AutopsyTool/
 
 ## Contributing
 
-This project is for personal use and is not publicly open for contibution
+This project is for personal use and is not publicly open for contribution
 
 ## License
 
@@ -113,5 +113,3 @@ This project is for personal use and is not publicly licensed.
 For any questions or feedback, please contact [Raja Gupta](mailto:erRaja97@gmail.com).
 
 ---
-
-Feel free to adjust any sections or details (such as contact information or licensing) to best suit your project.
