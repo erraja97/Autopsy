@@ -1,58 +1,58 @@
 [
-    {
-        "batch_number": 1,
-        "working_directory": "C:\\Users\\erraj\\OneDrive\\Desktop\\A031111",
-        "output_name": "REL_0_WRKDWGS_A031111",
-        "files": [
-            {
-                "pattern": "*CFAS*",
-                "include": "",
-                "exclude": "",
-                "sequence": 1
-            },
-            {
-                "pattern": "*WORKPRINT*",
-                "include": "",
-                "exclude": "",
-                "sequence": 2
-            },
-            {
-                "pattern": "*SITEWALK*",
-                "include": "",
-                "exclude": "",
-                "sequence": 3
-            }
-        ]
-    },
-    {
-        "batch_number": 2,
-        "working_directory": "C:\\Users\\erraj\\OneDrive\\Desktop\\A031111",
-        "output_name": "BACKUP_DOCS_REL_0_A031111",
-        "files": [
-            {
-                "pattern": "*QC*",
-                "include": "",
-                "exclude": "",
-                "sequence": 1
-            },
-            {
-                "pattern": "CFAS*.pdf",
-                "include": "",
-                "exclude": "",
-                "sequence": 2
-            },
-            {
-                "pattern": "lmu*.pdf",
-                "include": "",
-                "exclude": "3",
-                "sequence": 3
-            },
-            {
-                "pattern": "*RIPPLE*",
-                "include": "",
-                "exclude": "",
-                "sequence": 4
-            }
-        ]
-    }
+  {
+    "batch_number": 1,
+    "working_directory": "C:\\Users\\erraj\\OneDrive\\Desktop\\A031111",
+    "output_name": "REL_0_WRKDWGS_A031111",
+    "files": [
+      {
+        "pattern": "*CFAS*",
+        "include": "",
+        "exclude": "",
+        "sequence": 1
+      },
+      {
+        "pattern": "*WORKPRINT*",
+        "include": "",
+        "exclude": "",
+        "sequence": 2
+      },
+      {
+        "pattern": "*SITEWALK*",
+        "include": "",
+        "exclude": "",
+        "sequence": 3
+      }
+    ]
+  },
+  {
+    "batch_number": 2,
+    "working_directory": "C:\\Users\\erraj\\OneDrive\\Desktop\\A031111",
+    "output_name": "BACKUP_DOCS_REL_0_A031111",
+    "files": [
+      {
+        "pattern": "*QC*",
+        "include": "",
+        "exclude": "",
+        "sequence": 1
+      },
+      {
+        "pattern": "CFAS*.pdf",
+        "include": "",
+        "exclude": "",
+        "sequence": 2
+      },
+      {
+        "pattern": "lmu*.pdf",
+        "include": "",
+        "exclude": "3",
+        "sequence": 3
+      },
+      {
+        "pattern": "*RIPPLE*",
+        "include": "",
+        "exclude": "",
+        "sequence": 4
+      }
+    ]
+  }
 ]
