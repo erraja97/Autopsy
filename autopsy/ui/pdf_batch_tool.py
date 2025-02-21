@@ -73,6 +73,10 @@ class EditConfigDialog(QDialog):
             scroll_layout.addLayout(file_layout)
 
         # --- ADD SYNC CONTROLS AT THE TOP ---
+        # Retrieve saved slice values from the first batch (if available)
+        default_slice_start = self.config_data[0].get("slice_start", "-7")
+        default_slice_end = self.config_data[0].get("slice_end", "-1")
+
         sync_header_layout = QHBoxLayout()
         sync_info_label = QLabel("Sync Working Directory & Slice Output File Name:")
         sync_header_layout.addWidget(sync_info_label)
@@ -86,13 +90,18 @@ class EditConfigDialog(QDialog):
         # Add slicing controls below the header
         slice_layout = QHBoxLayout()
         self.slice_start_input = QLineEdit()
-        self.slice_start_input.setPlaceholderText("Slice start (e.g., 5)")
+        self.slice_start_input.setPlaceholderText("Slice start (e.g., -7)")
+        self.slice_start_input.setText(default_slice_start)
         slice_layout.addWidget(self.slice_start_input)
+
         self.slice_end_input = QLineEdit()
-        self.slice_end_input.setPlaceholderText("Slice end (e.g., 8)")
+        self.slice_end_input.setPlaceholderText("Slice end (e.g., -1)")
+        self.slice_end_input.setText(default_slice_end)
         slice_layout.addWidget(self.slice_end_input)
+
         scroll_layout.insertLayout(1, slice_layout)
         # --- END SYNC CONTROLS ---
+
 
         # Save Config Button
         save_button = QPushButton("Save Config")
@@ -147,15 +156,25 @@ class EditConfigDialog(QDialog):
 
 
     def save_config(self):
+        # Save the edited configuration back to the JSON structure.
+        # Also include slice indices for output file names.
+        # If the slice fields are empty, we use the default values "-7" and "-1".
+        slice_start = self.slice_start_input.text().strip() or "-7"
+        slice_end = self.slice_end_input.text().strip() or "-1"
+        
         for batch, working_dir_input, output_name_input, file_inputs in self.batch_inputs:
             batch["working_directory"] = working_dir_input.text()
             batch["output_name"] = output_name_input.text()
+            # Save the slice indices in the batch configuration.
+            batch["slice_start"] = slice_start
+            batch["slice_end"] = slice_end
             for file_config, pattern_input, include_input, exclude_input, sequence_input in file_inputs:
                 file_config["pattern"] = pattern_input.text()
                 file_config["include"] = include_input.text()
                 file_config["exclude"] = exclude_input.text()
                 file_config["sequence"] = sequence_input.value()
         self.accept()
+
 
 class ConfigEditor(QDialog):
     def __init__(self, config_path, parent=None):
