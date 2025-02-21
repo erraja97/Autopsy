@@ -18,8 +18,21 @@ def parse_page_ranges(page_range_str, total_pages):
     return pages
 
 def get_matching_files(directory, pattern):
+    """
+    Returns a sorted list of absolute paths for files in `directory` that match the given pattern.
+    
+    Matching rules:
+    - If pattern starts with "=": Exact match (case-insensitive).
+    - If pattern starts with "^": File name starts with the given string (case-insensitive).
+    - If pattern starts with "$": File name ends with the given string (case-insensitive).
+    - If pattern starts with "~": Treat the rest as a regex pattern (case-insensitive).
+    - If pattern starts and ends with "*": Contains match (same as default, but asterisks are stripped).
+    - Otherwise, default to contains match (case-insensitive).
+    Only files ending with ".pdf" are returned.
+    """
     files = sorted(os.listdir(directory))
     pattern = pattern.strip()
+    
     if pattern.startswith("="):
         match_func = lambda f: f.lower() == pattern[1:].lower()
     elif pattern.startswith("^"):
@@ -29,9 +42,13 @@ def get_matching_files(directory, pattern):
     elif pattern.startswith("~"):
         regex = re.compile(pattern[1:], re.IGNORECASE)
         match_func = lambda f: bool(regex.search(f))
+    elif pattern.startswith("*") and pattern.endswith("*"):
+        core = pattern.strip("*")
+        match_func = lambda f: core.lower() in f.lower()
     else:
         match_func = lambda f: pattern.lower() in f.lower()
-    return sorted([os.path.join(directory, f) for f in files if match_func(f) and f.endswith(".pdf")])
+    
+    return sorted([os.path.join(directory, f) for f in files if match_func(f) and f.lower().endswith(".pdf")])
 
 def parse_page_selection(page_input):
     pages = set()
@@ -69,7 +86,7 @@ def merge_batches(config_data):
             pattern = file_config["pattern"]
             include = file_config["include"]
             exclude = file_config["exclude"]
-            pdf_files = sorted(glob.glob(os.path.join(working_dir, pattern)))
+            pdf_files = get_matching_files(working_dir, pattern)
             
             # Log if no files found for this pattern:
             if not pdf_files:
