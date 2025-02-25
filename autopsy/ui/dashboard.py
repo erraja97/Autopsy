@@ -117,6 +117,16 @@ class Dashboard(QWidget):
         desc_pdf_compress.setAlignment(Qt.AlignCenter)
         grid_layout.addWidget(desc_pdf_compress, 3, 0)
 
+        # PDF Split Tool Button
+        self.btn_pdf_split = QPushButton("PDF Split Tool")
+        self.btn_pdf_split.setFont(QFont("Arial", 14, QFont.Weight.Bold))
+        self.btn_pdf_split.clicked.connect(self.open_pdf_split_tool)
+        grid_layout.addWidget(self.btn_pdf_split, 2, 1)  # Adjust grid position as needed
+        desc_pdf_split = QLabel("Split a PDF into individual pages.")
+        desc_pdf_split.setWordWrap(True)
+        desc_pdf_split.setAlignment(Qt.AlignCenter)
+        grid_layout.addWidget(desc_pdf_split, 3, 1)
+
         main_layout.addLayout(grid_layout)
         self.setLayout(main_layout)
 
@@ -134,6 +144,12 @@ class Dashboard(QWidget):
         from autopsy.ui.pdf_compress_tool import PDFCompressTool
         self.pdf_compress_tool = PDFCompressTool()
         self.pdf_compress_tool.show()
+
+    def open_pdf_split_tool(self):
+        from autopsy.ui.pdf_split_tool import PDFSplitTool
+        self.pdf_split_tool = PDFSplitTool()
+        self.pdf_split_tool.show()
+
 
     def switch_theme(self):
         if self.current_theme == "dark":
