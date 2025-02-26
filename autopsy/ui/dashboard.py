@@ -6,6 +6,9 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont, QColor, QPalette, QPixmap, QIcon
 from autopsy.utils import resource_path
 
+# Import the AboutDialog from the new file
+from autopsy.ui.about_dialog import AboutDialog
+
 VERSION = "1.0.0"
 DEVELOPER = "Raja Gupta"
 
@@ -32,22 +35,28 @@ class Dashboard(QWidget):
         main_layout = QVBoxLayout()
         main_layout.setSpacing(15)
         
-        # Header Layout for title and theme switch button
+        # Header Layout for title and top-right buttons
         header_layout = QHBoxLayout()
-        
-        # Title
+
+        # Title (left aligned)
         title_label = QLabel("Autopsy ©")
         title_label.setFont(QFont("Arial", 24, QFont.Weight.Bold))
         title_label.setStyleSheet("color: #4CAF50;")
         header_layout.addWidget(title_label)
-        
-        # Spacer between title and theme button
+
+        # Stretch to push the next buttons to the right
         header_layout.addStretch()
-        
-        # Theme switch button placed in header (separate from tool options)
-        self.btn_switch_theme = QPushButton("Switch to Light Theme")
+
+        # About button (top-right)
+        self.btn_about = QPushButton("About ℹ️")
+        self.btn_about.clicked.connect(self.show_about_dialog)
+        header_layout.addWidget(self.btn_about)
+
+        # Theme switch button (top-right)
+        self.btn_switch_theme = QPushButton("Switch to Light Theme 🛠️")
         self.btn_switch_theme.clicked.connect(self.switch_theme)
         header_layout.addWidget(self.btn_switch_theme)
+
         
         main_layout.addLayout(header_layout)
         
@@ -130,6 +139,11 @@ class Dashboard(QWidget):
         main_layout.addLayout(grid_layout)
         self.setLayout(main_layout)
 
+    
+    def show_about_dialog(self):
+        dialog = AboutDialog(self)
+        dialog.exec()
+
     def open_automation_tool(self):
         from autopsy.ui.pdf_batch_tool import PDFBatchTool
         self.automation_tool = PDFBatchTool()
@@ -155,11 +169,11 @@ class Dashboard(QWidget):
         if self.current_theme == "dark":
             self.load_stylesheet("light")
             self.current_theme = "light"
-            self.btn_switch_theme.setText("Switch to Dark Theme")
+            self.btn_switch_theme.setText("Switch to Dark Theme 🛠️")
         else:
             self.load_stylesheet("dark")
             self.current_theme = "dark"
-            self.btn_switch_theme.setText("Switch to Light Theme")
+            self.btn_switch_theme.setText("Switch to Light Theme 🛠️")
 
     def load_stylesheet(self, theme):
         qss_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), f"{theme}.qss")
