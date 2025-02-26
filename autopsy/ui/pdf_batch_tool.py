@@ -126,33 +126,38 @@ class EditConfigDialog(QDialog):
             return
 
         # Extract folder code from the working directory.
-        # In development, the folder is "A031111" or "A041111", etc.
+        # Example: "C:\Users\erraj\OneDrive\Desktop\A041111" => "A041111"
         folder_code = os.path.basename(os.path.normpath(first_wd))
         
-        # Parse slice indices from the slice inputs (if provided).
+        # Parse slice indices from the slice input fields (defaults: start=-7, end=-1).
         try:
-            start_index = int(self.slice_start_input.text().strip())
+            start_index = int(self.slice_start_input.text().strip()) if self.slice_start_input.text().strip() != "" else -7
         except Exception:
-            start_index = -7 #default value
+            start_index = -7
         try:
-            end_index = int(self.slice_end_input.text().strip())
+            end_index = int(self.slice_end_input.text().strip()) if self.slice_end_input.text().strip() != "" else -1
         except Exception:
-            end_index = -1 #default value
+            end_index = -1
 
-        # Sync every batch:
+        # For each batch, calculate the indices relative to the current output file name.
         for (batch, wd_input, on_input, _) in self.batch_inputs:
-            # Update working directory to that of the first batch.
+            # Sync working directory.
             wd_input.setText(first_wd)
 
-            # Update output file name using slicing.
+            # Get the current output file name.
             current_name = on_input.text().strip()
-            # Only update if both slice indices are provided.
-            if start_index is not None and end_index is not None:
-                # Replace the slice in current_name with the corresponding slice from folder_code.
-                # Note: Python slicing supports negative indices.
-                new_name = current_name[:start_index] + folder_code[start_index:end_index] + current_name[end_index:]
-                on_input.setText(new_name)
-        print(f"Synced all batches with working directory: {first_wd} and updated output file name slices based on folder code: {folder_code}")
+            current_len = len(current_name)
+            
+            # Convert negative indices to positive indices relative to current_name.
+            start_index_current = current_len + start_index if start_index < 0 else start_index
+            end_index_current = current_len + end_index + 1 if end_index < 0 else end_index + 1
+
+            # Replace the substring from start_index_current to end_index_current (inclusive) with the folder_code.
+            new_name = current_name[:start_index_current] + folder_code + current_name[end_index_current:]
+            on_input.setText(new_name)
+        
+        print(f"Synced all batches with working directory: {first_wd} and updated output file names using folder code: {folder_code}")
+
 
 
     def save_config(self):
