@@ -7,15 +7,30 @@ def parse_page_ranges(page_range_str, total_pages):
     pages = set()
     if page_range_str:
         ranges = page_range_str.split(',')
-        for r in ranges:
-            if '-' in r:
-                start, end = map(int, r.split('-'))
-                pages.update(range(max(0, start - 1), min(end, total_pages)))
+        # Helper to convert a value to an integer, handling macros.
+        def convert_value(val):
+            val = val.strip().upper()
+            if val == "FIRST":
+                return 1
+            elif val == "LAST":
+                return total_pages
             else:
-                page = int(r) - 1
+                return int(val)
+        
+        for r in ranges:
+            r = r.strip()
+            if '-' in r:
+                start_str, end_str = r.split('-')
+                start_val = convert_value(start_str)
+                end_val = convert_value(end_str)
+                # Adjust indices: page numbers are 1-based in input, but we store 0-based.
+                pages.update(range(max(0, start_val - 1), min(end_val, total_pages)))
+            else:
+                page = convert_value(r) - 1
                 if 0 <= page < total_pages:
                     pages.add(page)
     return pages
+
 
 def get_matching_files(directory, pattern):
     """

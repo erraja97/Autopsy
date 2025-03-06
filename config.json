@@ -1,23 +1,23 @@
 [
     {
         "batch_number": 1,
-        "working_directory": "C:\\Users\\erraj\\OneDrive\\Desktop\\A034568-1",
-        "output_name": "REL_0_WRKDWGS_A034568",
+        "working_directory": "C:\\Users\\erraj\\OneDrive\\Desktop\\A041111",
+        "output_name": "REL_0_WRKDWGS_A041111",
         "files": [
             {
                 "pattern": "*CFAS*",
-                "include": "",
+                "include": "1",
                 "exclude": "",
                 "sequence": 1
             },
             {
-                "pattern": "*WORKPRINT*",
+                "pattern": "~^wps\\.pdf$\n",
                 "include": "",
                 "exclude": "",
                 "sequence": 2
             },
             {
-                "pattern": "*SITEWALK*",
+                "pattern": "~(?i)^[0-9]+\\s+[A-Za-z\\s]+\\.pdf$\n",
                 "include": "",
                 "exclude": "",
                 "sequence": 3
@@ -25,40 +25,52 @@
         ],
         "slice_start": "-7",
         "slice_end": "-1",
-        "release_pattern": "(REL_)(\\d+)(_.+))"
+        "release_pattern": "(REL_)(\\d+)(_.+)"
     },
     {
         "batch_number": 2,
-        "working_directory": "C:\\Users\\erraj\\OneDrive\\Desktop\\A034568-1",
-        "output_name": "BACKUP_DOCS_REL_0_A034568",
+        "working_directory": "C:\\Users\\erraj\\OneDrive\\Desktop\\A041111",
+        "output_name": "BACKUP_DOCS_REL_0_A041111",
         "files": [
             {
-                "pattern": "*QC*",
+                "pattern": "*QC sheet*",
                 "include": "",
                 "exclude": "",
                 "sequence": 1
             },
             {
-                "pattern": "CFAS*.pdf",
+                "pattern": "*CORFIN*",
                 "include": "",
                 "exclude": "",
                 "sequence": 2
             },
             {
-                "pattern": "lmu*.pdf",
+                "pattern": "*ORCA*",
                 "include": "",
-                "exclude": "3",
+                "exclude": "",
                 "sequence": 3
+            },
+            {
+                "pattern": "*lmu*",
+                "include": "",
+                "exclude": "LAST",
+                "sequence": 4
             },
             {
                 "pattern": "*RIPPLE*",
                 "include": "",
                 "exclude": "",
-                "sequence": 4
+                "sequence": 5
+            },
+            {
+                "pattern": "*MAIL*",
+                "include": "",
+                "exclude": "",
+                "sequence": 6
             }
         ],
         "slice_start": "-7",
         "slice_end": "-1",
-        "release_pattern": "(REL_)(\\d+)(_.+))"
+        "release_pattern": "(REL_)(\\d+)(_.+)"
     }
 ]
