@@ -1,6 +1,7 @@
 import os
 import json
 import glob
+import re
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QPushButton, QFileDialog, QLabel, QTextEdit, QLineEdit,
     QFormLayout, QSpinBox, QGroupBox, QHBoxLayout, QScrollArea, QDialog, QSpacerItem, QSizePolicy
@@ -32,6 +33,53 @@ class EditConfigDialog(QDialog):
         scroll_layout = QVBoxLayout(scroll_widget)
 
         self.batch_inputs = []  # To store input fields per batch
+
+        # --- ADD SYNC CONTROLS AT THE TOP ---
+        # Retrieve saved slice values from the first batch (if available)
+        default_slice_start = self.config_data[0].get("slice_start", "-7")
+        default_slice_end = self.config_data[0].get("slice_end", "-1")
+        default_release_pattern = self.config_data[0].get("release_pattern", "(REL_)(\\d+)(_.+)")
+
+        # Create a header layout for sync and save controls
+        sync_header_layout = QHBoxLayout()
+        sync_info_label = QLabel("Sync Working Directory & Update Output File Name:")
+        sync_header_layout.addWidget(sync_info_label)
+
+        self.btn_sync = QPushButton("Sync Now")
+        self.btn_sync.clicked.connect(self.sync_batches)
+        sync_header_layout.addWidget(self.btn_sync)
+
+        # Add the Save Config button to the same header
+        self.btn_save_config_header = QPushButton("Save Config")
+        self.btn_save_config_header.clicked.connect(self.save_config)
+        sync_header_layout.addWidget(self.btn_save_config_header)
+
+        scroll_layout.insertLayout(0, sync_header_layout)
+
+        # Add slicing controls below the header
+        slice_layout = QHBoxLayout()
+        self.slice_start_input = QLineEdit()
+        self.slice_start_input.setPlaceholderText("Slice start (e.g., -7;4)")
+        self.slice_start_input.setText(default_slice_start)
+        slice_layout.addWidget(self.slice_start_input)
+
+        self.slice_end_input = QLineEdit()
+        self.slice_end_input.setPlaceholderText("Slice end (e.g., -1;4)")
+        self.slice_end_input.setText(default_slice_end)
+        slice_layout.addWidget(self.slice_end_input)
+
+        scroll_layout.insertLayout(1, slice_layout)
+
+        # Add new input for Release Pattern
+        release_pattern_layout = QHBoxLayout()
+        release_pattern_layout.addWidget(QLabel("Release Pattern:"))
+        self.release_pattern_input = QLineEdit()
+        # Default example: (REL_)(\d+)(_.+)
+        self.release_pattern_input.setPlaceholderText("e.g., (REL_)(\\d+)(_.+)")
+        self.release_pattern_input.setText(default_release_pattern)
+        release_pattern_layout.addWidget(self.release_pattern_input)
+        scroll_layout.insertLayout(2, release_pattern_layout)
+        # --- END SYNC CONTROLS ---
 
         # Create input fields for each batch
         for batch in self.config_data:
@@ -72,107 +120,90 @@ class EditConfigDialog(QDialog):
             scroll_layout.addWidget(batch_group)
             scroll_layout.addLayout(file_layout)
 
-        # --- ADD SYNC CONTROLS AT THE TOP ---
-        # Retrieve saved slice values from the first batch (if available)
-        default_slice_start = self.config_data[0].get("slice_start", "-7")
-        default_slice_end = self.config_data[0].get("slice_end", "-1")
-
-        sync_header_layout = QHBoxLayout()
-        sync_info_label = QLabel("Sync Working Directory & Slice Output File Name:")
-        sync_header_layout.addWidget(sync_info_label)
-
-        self.btn_sync = QPushButton("Sync Now")
-        self.btn_sync.clicked.connect(self.sync_batches)
-        sync_header_layout.addWidget(self.btn_sync)
-        # Add header above all batch input fields
-        scroll_layout.insertLayout(0, sync_header_layout)
-
-        # Add slicing controls below the header
-        slice_layout = QHBoxLayout()
-        self.slice_start_input = QLineEdit()
-        self.slice_start_input.setPlaceholderText("Slice start (e.g., -7)")
-        self.slice_start_input.setText(default_slice_start)
-        slice_layout.addWidget(self.slice_start_input)
-
-        self.slice_end_input = QLineEdit()
-        self.slice_end_input.setPlaceholderText("Slice end (e.g., -1)")
-        self.slice_end_input.setText(default_slice_end)
-        slice_layout.addWidget(self.slice_end_input)
-
-        scroll_layout.insertLayout(1, slice_layout)
-        # --- END SYNC CONTROLS ---
-
-
-        # Save Config Button
-        save_button = QPushButton("Save Config")
-        save_button.clicked.connect(self.save_config)
-        scroll_layout.addWidget(save_button)
-
         scroll_widget.setLayout(scroll_layout)
         scroll_area.setWidget(scroll_widget)
         main_layout.addWidget(scroll_area)
         self.setLayout(main_layout)
 
     def sync_batches(self):
-        # Check if there is at least one batch.
+        """
+        Sync the working directory across batches and update the output file names.
+        Two steps are performed:
+          1. The first slicing range (from slice_start_input and slice_end_input) is applied to update a substring with the folder code.
+          2. If a release pattern is provided and the folder name contains a release number (e.g., "A031111-2"),
+             the output file name is updated by replacing the matching portion with the new release number.
+        """
         if not self.batch_inputs:
             print("No batch data available to sync.")
             return
 
-        # Get working directory from the first batch's input field.
         first_wd = self.batch_inputs[0][1].text().strip()
         if not first_wd:
             print("First batch working directory is empty. Cannot sync.")
             return
 
-        # Extract folder code from the working directory.
-        # Example: "C:\Users\erraj\OneDrive\Desktop\A041111" => "A041111"
-        folder_code = os.path.basename(os.path.normpath(first_wd))
-        
-        # Parse slice indices from the slice input fields (defaults: start=-7, end=-1).
-        try:
-            start_index = int(self.slice_start_input.text().strip()) if self.slice_start_input.text().strip() != "" else -7
-        except Exception:
-            start_index = -7
-        try:
-            end_index = int(self.slice_end_input.text().strip()) if self.slice_end_input.text().strip() != "" else -1
-        except Exception:
-            end_index = -1
+        folder_name = os.path.basename(os.path.normpath(first_wd))
+        folder_parts = folder_name.split('-')
+        folder_code = folder_parts[0]
+        release_number = folder_parts[1] if len(folder_parts) > 1 else None
 
-        # For each batch, calculate the indices relative to the current output file name.
-        for (batch, wd_input, on_input, _) in self.batch_inputs:
-            # Sync working directory.
+        # Parse slicing indices (supporting multiple ranges separated by semicolons)
+        try:
+            start_ranges = [int(x.strip()) for x in self.slice_start_input.text().split(';') if x.strip() != '']
+            end_ranges = [int(x.strip()) for x in self.slice_end_input.text().split(';') if x.strip() != '']
+        except ValueError:
+            print("Invalid slice indices. Please enter valid integers separated by semicolons.")
+            return
+
+        for (batch, wd_input, output_name_input, _) in self.batch_inputs:
             wd_input.setText(first_wd)
+            current_name = output_name_input.text().strip()
 
-            # Get the current output file name.
-            current_name = on_input.text().strip()
-            current_len = len(current_name)
-            
-            # Convert negative indices to positive indices relative to current_name.
-            start_index_current = current_len + start_index if start_index < 0 else start_index
-            end_index_current = current_len + end_index + 1 if end_index < 0 else end_index + 1
+            # First range set: update the folder code
+            if len(start_ranges) >= 1 and len(end_ranges) >= 1:
+                start_idx = start_ranges[0]
+                end_idx = end_ranges[0]
+                adjusted_start = len(current_name) + start_idx if start_idx < 0 else start_idx
+                adjusted_end = len(current_name) + end_idx + 1 if end_idx < 0 else end_idx + 1
+                adjusted_start = max(0, min(len(current_name), adjusted_start))
+                adjusted_end = max(adjusted_start, min(len(current_name), adjusted_end))
+                current_name = current_name[:adjusted_start] + folder_code + current_name[adjusted_end:]
 
-            # Replace the substring from start_index_current to end_index_current (inclusive) with the folder_code.
-            new_name = current_name[:start_index_current] + folder_code + current_name[end_index_current:]
-            on_input.setText(new_name)
-        
-        print(f"Synced all batches with working directory: {first_wd} and updated output file names using folder code: {folder_code}")
+            # Now, update the release number using the provided release pattern
+            release_pattern = self.release_pattern_input.text().strip()
+            if release_pattern and release_number:
+                try:
+                    def replace_release(match):
+                        # Expecting at least three groups: prefix, current release, and suffix.
+                        return f"{match.group(1)}{release_number}{match.group(3)}" if match.lastindex >= 3 else release_number
+                    current_name = re.sub(release_pattern, replace_release, current_name)
+                except Exception as e:
+                    print(f"Error applying release pattern: {e}")
 
+            # If additional slicing ranges are provided, apply them (optional)
+            if len(start_ranges) >= 2 and len(end_ranges) >= 2:
+                start_idx = start_ranges[1]
+                end_idx = end_ranges[1]
+                adjusted_start = len(current_name) + start_idx if start_idx < 0 else start_idx
+                adjusted_end = len(current_name) + end_idx + 1 if end_idx < 0 else end_idx + 1
+                adjusted_start = max(0, min(len(current_name), adjusted_start))
+                adjusted_end = max(adjusted_start, min(len(current_name), adjusted_end))
+                current_name = current_name[:adjusted_start] + current_name[adjusted_end:]
 
+            output_name_input.setText(current_name)
+
+        print(f"Synced batches with working directory: {first_wd}. Updated filenames based on folder '{folder_name}'.")
 
     def save_config(self):
-        # Save the edited configuration back to the JSON structure.
-        # Also include slice indices for output file names.
-        # If the slice fields are empty, we use the default values "-7" and "-1".
-        slice_start = self.slice_start_input.text().strip() or "-7"
-        slice_end = self.slice_end_input.text().strip() or "-1"
-        
+        slice_start = self.slice_start_input.text().strip() or ""
+        slice_end = self.slice_end_input.text().strip() or ""
+        release_pattern = self.release_pattern_input.text().strip() or ""
         for batch, working_dir_input, output_name_input, file_inputs in self.batch_inputs:
             batch["working_directory"] = working_dir_input.text()
             batch["output_name"] = output_name_input.text()
-            # Save the slice indices in the batch configuration.
             batch["slice_start"] = slice_start
             batch["slice_end"] = slice_end
+            batch["release_pattern"] = release_pattern
             for file_config, pattern_input, include_input, exclude_input, sequence_input in file_inputs:
                 file_config["pattern"] = pattern_input.text()
                 file_config["include"] = include_input.text()
@@ -247,6 +278,7 @@ class ConfigEditor(QDialog):
     def log(self, message):
         print(message)
 
+
 class PDFBatchTool(QWidget):
     def __init__(self):
         super().__init__()
@@ -258,7 +290,6 @@ class PDFBatchTool(QWidget):
     def initUI(self):
         self.setWindowTitle("Automation Tool - Batch PDF Processing")
         self.setGeometry(100, 100, 500, 600)
-        # self.setStyleSheet("background-color: #161D27;")
         self.setWindowIcon(QIcon(ICON_PATH))
 
         layout = QVBoxLayout()
@@ -359,6 +390,7 @@ class PDFBatchTool(QWidget):
             self.log("❌ No config file selected.")
 
     def add_batch(self):
+        from PySide6.QtWidgets import QGroupBox, QFormLayout
         batch_group_box = QGroupBox(f"Batch {self.batch_counter}")
         batch_layout = QVBoxLayout()
         batch_layout.addWidget(QLabel("Working Directory:"))
@@ -379,9 +411,9 @@ class PDFBatchTool(QWidget):
             "files": []
         }
         self.batch_list.append(batch_data)
+        self.scroll_layout.insertWidget(self.batch_counter - 1, batch_group_box)
         self.add_file_input_fields(batch_layout, batch_data)
         batch_group_box.setLayout(batch_layout)
-        self.scroll_layout.insertWidget(self.batch_counter - 1, batch_group_box)
         self.batch_counter += 1
 
     def select_directory(self, directory_input):
@@ -390,6 +422,7 @@ class PDFBatchTool(QWidget):
             directory_input.setText(directory_path)
 
     def add_file_input_fields(self, batch_layout, batch_data):
+        from PySide6.QtWidgets import QFormLayout
         file_layout = QFormLayout()
         pattern_input = QLineEdit()
         file_layout.addRow("Pattern:", pattern_input)
