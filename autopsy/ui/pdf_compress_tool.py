@@ -1,12 +1,18 @@
 import os
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QPushButton, QLabel, QFileDialog, QSlider,
-    QHBoxLayout, QMessageBox, QProgressBar, QSpinBox, QComboBox, QFrame
+    QHBoxLayout, QMessageBox, QProgressBar, QSpinBox, QComboBox, QFrame, QCheckBox
 )
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
-from autopsy.core.pdf_compress_core import compress_pdf_advanced
-from autopsy.utils import resource_path
+
+# Adjust import as needed for your project structure
+# from autopsy.core.pdf_compress_core import compress_pdf_advanced
+# from autopsy.utils import resource_path
+
+# For demonstration, we'll define a mock resource_path
+def resource_path(path):
+    return path
 
 ASSETS_PATH = resource_path("autopsy/assets")
 ICON_PATH = os.path.join(ASSETS_PATH, "autopsy.ico")
@@ -45,7 +51,7 @@ class PDFCompressTool(QWidget):
         mode_layout.addWidget(self.mode_combo)
         layout.addLayout(mode_layout)
 
-        # Create a container frame for settings specific to rasterize mode.
+        # Container frame for rasterize mode settings
         self.raster_settings_frame = QFrame()
         raster_layout = QVBoxLayout()
         self.raster_settings_frame.setLayout(raster_layout)
@@ -64,13 +70,14 @@ class PDFCompressTool(QWidget):
         quality_layout.addWidget(self.quality_label)
         raster_layout.addLayout(quality_layout)
 
-        # Maximum dimensions (optional)
+        # Maximum dimensions
         dim_layout = QHBoxLayout()
         dim_layout.addWidget(QLabel("Max Width:"))
         self.max_w = QSpinBox()
         self.max_w.setRange(0, 10000)
         self.max_w.setValue(1500)
         dim_layout.addWidget(self.max_w)
+
         dim_layout.addWidget(QLabel("Max Height:"))
         self.max_h = QSpinBox()
         self.max_h.setRange(0, 10000)
@@ -86,6 +93,16 @@ class PDFCompressTool(QWidget):
         self.dpi_spin.setValue(150)
         dpi_layout.addWidget(self.dpi_spin)
         raster_layout.addLayout(dpi_layout)
+
+        # Checkbox to skip text-rich pages
+        self.skip_text_chk = QCheckBox("Skip rasterizing pages with mostly text")
+        self.skip_text_chk.setChecked(False)
+        raster_layout.addWidget(self.skip_text_chk)
+
+        # Checkbox to skip vector-only pages
+        self.skip_vector_chk = QCheckBox("Skip rasterizing vector-only pages")
+        self.skip_vector_chk.setChecked(False)
+        raster_layout.addWidget(self.skip_vector_chk)
 
         layout.addWidget(self.raster_settings_frame)
 
@@ -104,16 +121,12 @@ class PDFCompressTool(QWidget):
         layout.addWidget(self.result_label)
 
         self.setLayout(layout)
-        # Initialize UI mode based on default combo selection
         self.update_ui_mode()
 
     def update_ui_mode(self):
-        # Only show rasterize-related settings when mode is rasterize.
+        # Show raster settings only if "Rasterize All Pages" is selected.
         mode = self.mode_combo.currentData()  # "preserve" or "rasterize"
-        if mode == "rasterize":
-            self.raster_settings_frame.setVisible(True)
-        else:
-            self.raster_settings_frame.setVisible(False)
+        self.raster_settings_frame.setVisible(mode == "rasterize")
 
     def select_pdf(self):
         file, _ = QFileDialog.getOpenFileName(self, "Select PDF File", "", "PDF Files (*.pdf)")
@@ -136,10 +149,17 @@ class PDFCompressTool(QWidget):
         max_h = self.max_h.value() or None
         dpi_val = self.dpi_spin.value()
 
+        # Retrieve checkbox states
+        skip_text = self.skip_text_chk.isChecked()
+        skip_vector = self.skip_vector_chk.isChecked()
+
         def progress_cb(pct):
             self.progress_bar.setValue(pct)
 
         try:
+            # Adjust this import call as needed
+            from autopsy.core.pdf_compress_core import compress_pdf_advanced
+            
             final_size = compress_pdf_advanced(
                 input_path=self.selected_pdf,
                 output_path=save_path,
@@ -148,6 +168,8 @@ class PDFCompressTool(QWidget):
                 max_width=max_w,
                 max_height=max_h,
                 dpi=dpi_val,
+                skip_text_rich=skip_text,
+                skip_vector_only=skip_vector,
                 progress_callback=progress_cb
             )
             self.result_label.setText(f"Compressed Size: {final_size:.2f} MB")
