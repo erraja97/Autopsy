@@ -99,12 +99,12 @@ class PDFCompressTool(QWidget):
 
         # Checkbox to skip text-rich pages
         self.skip_text_chk = QCheckBox("Skip rasterizing pages with mostly text")
-        self.skip_text_chk.setChecked(False)
+        self.skip_text_chk.setChecked(True)
         raster_layout.addWidget(self.skip_text_chk)
 
         # Checkbox to skip vector-only pages
         self.skip_vector_chk = QCheckBox("Skip rasterizing vector-only pages")
-        self.skip_vector_chk.setChecked(False)
+        self.skip_vector_chk.setChecked(True)
         raster_layout.addWidget(self.skip_vector_chk)
 
         layout.addWidget(self.raster_settings_frame)

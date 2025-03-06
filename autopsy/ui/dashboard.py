@@ -126,25 +126,25 @@ class Dashboard(QWidget):
         desc_pdf_compress.setAlignment(Qt.AlignCenter)
         grid_layout.addWidget(desc_pdf_compress, 3, 0)
 
-        # PDF Split Tool Button
-        self.btn_pdf_split = QPushButton("PDF Split Tool")
-        self.btn_pdf_split.setFont(QFont("Arial", 14, QFont.Weight.Bold))
-        self.btn_pdf_split.clicked.connect(self.open_pdf_split_tool)
-        grid_layout.addWidget(self.btn_pdf_split, 2, 1)  # Adjust grid position as needed
-        desc_pdf_split = QLabel("Split a PDF into individual pages.")
-        desc_pdf_split.setWordWrap(True)
-        desc_pdf_split.setAlignment(Qt.AlignCenter)
-        grid_layout.addWidget(desc_pdf_split, 3, 1)
-
         # PDF Convert Tool Button
         self.btn_pdf_convert = QPushButton("PDF Convert Tool")
         self.btn_pdf_convert.setFont(QFont("Arial", 14, QFont.Weight.Bold))
         self.btn_pdf_convert.clicked.connect(self.open_pdf_convert_tool)
-        grid_layout.addWidget(self.btn_pdf_convert, 4, 0)
+        grid_layout.addWidget(self.btn_pdf_convert, 2, 1)
         desc_pdf_convert = QLabel("Convert PDF to DOCX, PPT, or Images.")
         desc_pdf_convert.setWordWrap(True)
         desc_pdf_convert.setAlignment(Qt.AlignCenter)
-        grid_layout.addWidget(desc_pdf_convert, 5, 0)
+        grid_layout.addWidget(desc_pdf_convert, 3, 1)
+
+        # PDF Split Tool Button
+        self.btn_pdf_split = QPushButton("PDF Split Tool")
+        self.btn_pdf_split.setFont(QFont("Arial", 14, QFont.Weight.Bold))
+        self.btn_pdf_split.clicked.connect(self.open_pdf_split_tool)
+        grid_layout.addWidget(self.btn_pdf_split, 4, 0)  # Adjust grid position as needed
+        desc_pdf_split = QLabel("Split a PDF into individual pages.")
+        desc_pdf_split.setWordWrap(True)
+        desc_pdf_split.setAlignment(Qt.AlignCenter)
+        grid_layout.addWidget(desc_pdf_split, 5, 0)
 
         main_layout.addLayout(grid_layout)
         self.setLayout(main_layout)
@@ -169,15 +169,15 @@ class Dashboard(QWidget):
         self.pdf_compress_tool = PDFCompressTool()
         self.pdf_compress_tool.show()
 
-    def open_pdf_split_tool(self):
-        from autopsy.ui.pdf_split_tool import PDFSplitTool
-        self.pdf_split_tool = PDFSplitTool()
-        self.pdf_split_tool.show()
-
     def open_pdf_convert_tool(self):
         from autopsy.ui.pdf_convert_tool import PDFConvertTool
         self.pdf_convert_tool = PDFConvertTool()
         self.pdf_convert_tool.show()
+
+    def open_pdf_split_tool(self):
+        from autopsy.ui.pdf_split_tool import PDFSplitTool
+        self.pdf_split_tool = PDFSplitTool()
+        self.pdf_split_tool.show()
 
 
 
