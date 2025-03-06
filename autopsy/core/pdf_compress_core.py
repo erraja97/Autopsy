@@ -48,10 +48,10 @@ def compress_pdf_advanced(
 def _clone_and_compress_images(
     input_path: str,
     output_path: str,
-    quality: int,
-    max_width: int,
-    max_height: int,
-    progress_callback
+    quality: int = 50,
+    max_width: int = 1200,
+    max_height: int = 1200,
+    progress_callback=None
 ) -> float:
     """
     Clone each page from the source PDF into a new PDF using insert_pdf,
@@ -59,10 +59,6 @@ def _clone_and_compress_images(
     Preserves text & vectors.
     Detailed logs are printed for every step.
     """
-    #default values
-    max_height = 1200
-    max_width = 1200
-    quality = 50
 
     src_doc = fitz.open(input_path)
     dst_doc = fitz.open()  # New PDF document
