@@ -3,9 +3,9 @@ import fitz  # PyMuPDF
 from PyPDF2 import PdfReader, PdfMerger
 from PySide6.QtWidgets import (
     QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QLabel, QFileDialog,
-    QMessageBox, QGridLayout, QCheckBox, QScrollArea
+    QMessageBox, QScrollArea, QCheckBox, QLineEdit
 )
-from PySide6.QtGui import QPixmap, QImage, QIcon
+from PySide6.QtGui import QPixmap, QImage, QIcon, QDragEnterEvent, QDropEvent
 from PySide6.QtCore import Qt
 from autopsy.utils import resource_path
 
@@ -16,131 +16,243 @@ class PDFMergeTool(QWidget):
     def __init__(self):
         super().__init__()
         self.files_to_merge = []  # List of file paths
-        self.pages_to_include = {}  # (file_path, page_num) -> QCheckBox
+        self.pages_to_include = {}  # (pdf_file, page_num) -> QCheckBox
+        self.setAcceptDrops(True)  # Enable drag & drop support
         self.initUI()
 
     def initUI(self):
         self.setWindowTitle("PDF Merge Tool")
-        self.setGeometry(100, 100, 800, 600)
-        # self.setStyleSheet("background-color: #161D27;")
+        self.setGeometry(100, 100, 900, 700)
         self.setWindowIcon(QIcon(ICON_PATH))
 
-        layout = QVBoxLayout()
+        main_layout = QVBoxLayout()
 
-        # Title
-        title_label = QLabel("Merge PDFs", self)
-        # title_label.setStyleSheet("color: white; font-size: 20px; font-weight: bold;")
-        layout.addWidget(title_label)
-
-        # Description
-        desc_label = QLabel("Select PDFs to merge, preview pages, and choose pages to include/exclude.", self)
-        # desc_label.setStyleSheet("color: white;")
-        layout.addWidget(desc_label)
+        # Title & description
+        title_label = QLabel("Merge PDFs")
+        main_layout.addWidget(title_label)
+        desc_label = QLabel("Select PDFs, specify page ranges, preview pages, and merge.")
+        main_layout.addWidget(desc_label)
 
         # Button to select PDFs
-        self.btn_select_pdfs = QPushButton("Select PDFs", self)
+        self.btn_select_pdfs = QPushButton("Select PDFs")
         self.btn_select_pdfs.clicked.connect(self.select_pdfs)
-        layout.addWidget(self.btn_select_pdfs)
+        main_layout.addWidget(self.btn_select_pdfs)
 
-        # Scroll area to show PDF previews
-        self.scroll_area = QScrollArea(self)
+        # Scroll area for PDF previews
+        self.scroll_area = QScrollArea()
         self.scroll_area.setWidgetResizable(True)
-        self.preview_widget = QWidget(self)
-        self.scroll_layout = QGridLayout(self.preview_widget)
-        self.scroll_area.setWidget(self.preview_widget)
-        layout.addWidget(self.scroll_area)
+        self.scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
-        # Button to merge PDFs
-        self.btn_merge = QPushButton("Merge PDFs", self)
+        self.preview_widget = QWidget()
+        self.preview_layout = QVBoxLayout(self.preview_widget)
+        self.scroll_area.setWidget(self.preview_widget)
+        main_layout.addWidget(self.scroll_area)
+
+        # Merge button
+        self.btn_merge = QPushButton("Merge PDFs")
         self.btn_merge.setEnabled(False)
         self.btn_merge.clicked.connect(self.merge_pdfs)
-        layout.addWidget(self.btn_merge)
+        main_layout.addWidget(self.btn_merge)
 
         # Status label
-        self.status_label = QLabel("", self)
-        # self.status_label.setStyleSheet("color: white;")
-        layout.addWidget(self.status_label)
+        self.status_label = QLabel("")
+        main_layout.addWidget(self.status_label)
 
-        self.setLayout(layout)
+        self.setLayout(main_layout)
 
+    # ------------------ Drag & Drop ------------------ #
+    def dragEnterEvent(self, event: QDragEnterEvent):
+        if event.mimeData().hasUrls():
+            for url in event.mimeData().urls():
+                if url.toLocalFile().lower().endswith(".pdf"):
+                    event.acceptProposedAction()
+                    return
+        event.ignore()
+
+    def dropEvent(self, event: QDropEvent):
+        if event.mimeData().hasUrls():
+            dropped_files = []
+            for url in event.mimeData().urls():
+                file_path = url.toLocalFile()
+                if file_path.lower().endswith(".pdf") and file_path not in self.files_to_merge:
+                    dropped_files.append(file_path)
+            if dropped_files:
+                self.files_to_merge.extend(dropped_files)
+                self.status_label.setText(f"{len(self.files_to_merge)} PDFs selected.")
+                self.btn_merge.setEnabled(True)
+                self.preview_pdfs()
+
+    # ------------------ Selecting & Previewing PDFs ------------------ #
     def select_pdfs(self):
         files, _ = QFileDialog.getOpenFileNames(self, "Select PDFs", "", "PDF Files (*.pdf)")
         if files:
             self.files_to_merge = files
-            self.status_label.setText(f"{len(files)} PDFs selected.")
+            self.status_label.setText(f"{len(self.files_to_merge)} PDFs selected.")
             self.btn_merge.setEnabled(True)
             self.preview_pdfs()
 
     def preview_pdfs(self):
-        # Clear previous previews
-        for i in reversed(range(self.scroll_layout.count())):
-            widget = self.scroll_layout.itemAt(i).widget()
-            if widget:
-                widget.deleteLater()
-
-        row = 0
+        # Clear out old preview widgets
+        while self.preview_layout.count():
+            item = self.preview_layout.takeAt(0)
+            if item.widget():
+                item.widget().deleteLater()
         self.pages_to_include.clear()
 
-        # Loop through selected PDFs
+        # Build a preview section for each PDF
         for pdf_index, pdf_file in enumerate(self.files_to_merge):
-            # PDF Title
-            pdf_title = QLabel(f"PDF: {os.path.basename(pdf_file)}", self)
-            # pdf_title.setStyleSheet("font-weight: bold; margin-top: 10px; color: white;")
-            self.scroll_layout.addWidget(pdf_title, row, 0, 1, 2)
-            row += 1
+            container = QWidget()
+            container_layout = QHBoxLayout(container)
+            container_layout.setSpacing(10)
 
-            # Separator line
-            separator_line = QLabel(self)
-            separator_line.setStyleSheet("border-top: 1px solid gray; margin-top: 10px;")
-            self.scroll_layout.addWidget(separator_line, row, 0, 1, 2)
-            row += 1
+            # Left side: up/down arrow buttons
+            btn_layout = QVBoxLayout()
+            btn_layout.setSpacing(10)
 
-            # Horizontal layout for page previews
-            horizontal_layout = QHBoxLayout()
-            doc = fitz.open(pdf_file)
-            for page_num in range(len(doc)):
+            btn_move_up = QPushButton("↑")
+            btn_move_up.setFixedSize(30, 30)
+            btn_move_up.setToolTip("Move PDF Up")
+            btn_move_up.setStyleSheet("""
+                QPushButton {
+                    border-radius: 15px;
+                    background-color: #4CAF50;
+                    color: white;
+                    font-weight: bold;
+                }
+                QPushButton:hover { background-color: #45a049; }
+            """)
+            btn_move_up.clicked.connect(lambda _, idx=pdf_index: self.move_pdf(idx, "up"))
+            btn_layout.addWidget(btn_move_up)
+
+            btn_move_down = QPushButton("↓")
+            btn_move_down.setFixedSize(30, 30)
+            btn_move_down.setToolTip("Move PDF Down")
+            btn_move_down.setStyleSheet("""
+                QPushButton {
+                    border-radius: 15px;
+                    background-color: #4CAF50;
+                    color: white;
+                    font-weight: bold;
+                }
+                QPushButton:hover { background-color: #45a049; }
+            """)
+            btn_move_down.clicked.connect(lambda _, idx=pdf_index: self.move_pdf(idx, "down"))
+            btn_layout.addWidget(btn_move_down)
+
+            container_layout.addLayout(btn_layout)
+
+            # Right side: PDF title, page-range input, page previews
+            info_layout = QVBoxLayout()
+            pdf_title = QLabel(f"PDF: {os.path.basename(pdf_file)}")
+            info_layout.addWidget(pdf_title)
+
+            page_range_input = QLineEdit()
+            page_range_input.setPlaceholderText("Page range (e.g. 1-3,5). Leave empty for all pages.")
+            info_layout.addWidget(page_range_input)
+
+            # The pages preview area
+            pages_widget = QWidget()
+            pages_layout = QHBoxLayout(pages_widget)
+            pages_layout.setSpacing(10)
+            info_layout.addWidget(pages_widget)
+
+            # Connect the page-range input so it updates preview dynamically
+            page_range_input.textChanged.connect(
+                lambda txt, idx=pdf_index, f=pdf_file, w=pages_widget: self.update_pdf_preview(idx, f, txt, w)
+            )
+
+            # Initially show all pages
+            self.update_pdf_preview(pdf_index, pdf_file, "", pages_widget)
+
+            container_layout.addLayout(info_layout)
+            self.preview_layout.addWidget(container)
+
+    def update_pdf_preview(self, pdf_index, pdf_file, range_text, pages_widget):
+        """Render only the pages in range_text for pdf_file and show them in pages_widget."""
+        # Clear old previews
+        layout = pages_widget.layout()
+        while layout.count():
+            child = layout.takeAt(0)
+            if child.widget():
+                child.widget().deleteLater()
+
+        # Remove old checkboxes from self.pages_to_include for this PDF
+        old_keys = [k for k in self.pages_to_include if k[0] == pdf_file]
+        for k in old_keys:
+            del self.pages_to_include[k]
+
+        # Parse the page range
+        doc = fitz.open(pdf_file)
+        total_pages = len(doc)
+        pages_to_show = self.parse_page_range(range_text, total_pages) if range_text.strip() else list(range(total_pages))
+
+        for page_num in pages_to_show:
+            if 0 <= page_num < total_pages:
                 page = doc.load_page(page_num)
-                pix = page.get_pixmap(dpi=200)
-                img_data = pix.tobytes("ppm")
-                image = QImage.fromData(img_data)
-                pixmap = QPixmap.fromImage(image)
-                scaled_pixmap = pixmap.scaled(200, 200, Qt.AspectRatioMode.KeepAspectRatio)
-                
-                # Page preview label
-                page_preview = QLabel(self)
+
+                # Increase resolution for clarity, e.g. 300 DPI
+                mat = fitz.Matrix(300 / 72.0, 300 / 72.0)  # 300 dpi
+                pix = page.get_pixmap(matrix=mat)
+                # Convert to QPixmap
+                qimg = QImage.fromData(pix.tobytes("ppm"))
+                pixmap = QPixmap.fromImage(qimg)
+
+                # Scale it to a specific width (e.g. 250 px) for clarity
+                scaled_pixmap = pixmap.scaledToWidth(250, Qt.SmoothTransformation)
+
+                # Label to display the page
+                page_preview = QLabel()
                 page_preview.setPixmap(scaled_pixmap)
+                # Remove any border or background
+                page_preview.setStyleSheet("QLabel { border: none; background-color: transparent; }")
+
                 page_preview.setAlignment(Qt.AlignCenter)
-                
-                # Checkbox for page inclusion
-                checkbox = QCheckBox(f"Page {page_num + 1}", self)
-                # checkbox.setStyleSheet("color: white;")
+
+                # Checkbox
+                checkbox = QCheckBox(f"Page {page_num + 1}")
                 checkbox.setChecked(True)
                 checkbox.stateChanged.connect(self.toggle_page_inclusion)
-                
-                # Store checkbox with key (pdf_file, page_num)
                 self.pages_to_include[(pdf_file, page_num)] = checkbox
-                
-                # Add to horizontal layout
-                horizontal_layout.addWidget(page_preview)
-                horizontal_layout.addWidget(checkbox)
-            
-            # Add rearrangement buttons for this PDF
-            btn_move_up = QPushButton("Move Up", self)
-            btn_move_up.clicked.connect(lambda _, index=pdf_index: self.move_pdf(index, "up"))
-            btn_move_down = QPushButton("Move Down", self)
-            btn_move_down.clicked.connect(lambda _, index=pdf_index: self.move_pdf(index, "down"))
-            self.scroll_layout.addWidget(btn_move_up, row, 0)
-            self.scroll_layout.addWidget(btn_move_down, row, 1)
-            row += 1
 
-            # Add the horizontal layout containing page previews and checkboxes
-            page_container_widget = QWidget(self)
-            page_container_widget.setLayout(horizontal_layout)
-            self.scroll_layout.addWidget(page_container_widget, row, 0, 1, 2)
-            row += 1
+                # Layout for this page
+                pg_layout = QVBoxLayout()
+                pg_layout.setSpacing(2)
+                pg_layout.addWidget(page_preview, alignment=Qt.AlignCenter)
+                pg_layout.addWidget(checkbox, alignment=Qt.AlignCenter)
 
+                # Add the page layout to the pages_layout
+                page_container = QWidget()
+                page_container.setLayout(pg_layout)
+                layout.addWidget(page_container)
+
+        doc.close()
+
+    def parse_page_range(self, text, total_pages):
+        """
+        Parse a page range string (e.g. "1-3,5") and return zero-based page indices.
+        """
+        pages = set()
+        for part in text.split(','):
+            part = part.strip()
+            if '-' in part:
+                start_str, end_str = part.split('-', 1)
+                start = int(start_str) - 1
+                end = int(end_str) - 1
+                for p in range(start, end + 1):
+                    if 0 <= p < total_pages:
+                        pages.add(p)
+            else:
+                try:
+                    p = int(part) - 1
+                    if 0 <= p < total_pages:
+                        pages.add(p)
+                except ValueError:
+                    pass
+        return sorted(pages)
+
+    # ------------------ Moving & Merging ------------------ #
     def move_pdf(self, index, direction):
-        """Move a PDF in the list up or down."""
         if direction == "up" and index > 0:
             self.files_to_merge[index], self.files_to_merge[index - 1] = (
                 self.files_to_merge[index - 1], self.files_to_merge[index]
@@ -149,10 +261,10 @@ class PDFMergeTool(QWidget):
             self.files_to_merge[index], self.files_to_merge[index + 1] = (
                 self.files_to_merge[index + 1], self.files_to_merge[index]
             )
-        # Refresh previews to reflect updated order
         self.preview_pdfs()
 
     def toggle_page_inclusion(self):
+        # For debug: prints included/excluded pages
         sender = self.sender()
         for (pdf_file, page_num), checkbox in self.pages_to_include.items():
             if sender == checkbox:
