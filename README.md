@@ -1,7 +1,3 @@
-Below is the updated README.md file for your project:
-
----
-
 # AutopsyTool
 
 **AutopsyTool** is a modular, automated PDF processing application designed to streamline tasks like batch PDF processing, merging, and compression. Built using PySide6, the tool features a modern, theme-switchable interface that adapts to both dark and light modes. In addition, the configuration editor allows you to synchronize working directories and dynamically slice output file names across multiple batches.
@@ -33,13 +29,17 @@ AutopsyTool/
 │   │   ├── __init__.py
 │   │   ├── pdf_batch_core.py     # Core business logic for batch PDF processing
 │   │   ├── pdf_merge_core.py     # Core merging logic for PDFs
-│   │   └── pdf_compress_core.py  # Core compression logic for PDFs
+│   │   ├── pdf_compress_core.py  # Core compression logic for PDFs
+│   │   └── pdf_split_core.py     # Core splitting logic for PDFs
 │   ├── ui/
 │   │   ├── __init__.py
 │   │   ├── dashboard.py          # Main dashboard with theme switcher and tool launchers
+│   │   ├── about_dialog.py       # About dialog with project and developer info
 │   │   ├── pdf_batch_tool.py     # UI for Batch PDF Processing (with config editor and sync feature)
 │   │   ├── pdf_merge_tool.py     # UI for PDF Merging
-│   │   └── pdf_compress_tool.py  # UI for PDF Compression
+│   │   ├── pdf_compress_tool.py  # UI for PDF Compression
+│   │   ├── pdf_convert_tool.py   # UI for PDF Conversion (to DOCX, PPT, or Images)
+│   │   └── pdf_split_tool.py     # UI for PDF Splitting
 │   └── utils.py                 # Helper functions (e.g., resource_path)
 ├── dark.qss                     # Dark theme stylesheet
 ├── light.qss                    # Light theme stylesheet
@@ -87,7 +87,7 @@ AutopsyTool/
 2. **Dashboard Overview:**
 
    - **Tool Launchers:**  
-     Use the buttons on the dashboard to launch the Automation (Batch PDF Processing), PDF Merger, and PDF Compression tools.
+     Use the buttons on the dashboard to launch the Automation (Batch PDF Processing), PDF Merger, PDF Compression, PDF Conversion, and PDF Split tools.
 
    - **Theme Switching:**  
      Use the theme switch button (located in the header area) to toggle between dark and light modes. The global stylesheet is applied so that all tool windows reflect the chosen theme.
@@ -105,6 +105,12 @@ AutopsyTool/
 5. **PDF Compression:**  
    Select a PDF, adjust the compression quality using the slider, and monitor the progress via a progress bar.
 
+6. **PDF Conversion:**  
+   Convert PDFs to DOCX, PPT, or image files. For image conversion, you can select the output format (JPG, PNG, or BMP).
+
+7. **PDF Splitting:**  
+   Split a PDF using one of three modes: every page, after specific pages, or in chunks of N pages.
+
 ## Contributing
 
 This project is for personal use and is not publicly open for contribution.
@@ -118,5 +124,3 @@ This project is for personal use and is not publicly licensed.
 For any questions or feedback, please contact [Raja Gupta](mailto:erRaja97@gmail.com).
 
 ---
-
-Feel free to modify or extend this README as needed for your project.
