@@ -83,7 +83,7 @@ class AboutDialog(QDialog):
 
         # AutopsyTool description
         autopsy_desc = QLabel(
-            "AutopsyTool is a modular PDF processing application that automates tasks such as batch "
+            "Autopsy is a modular PDF processing application that automates tasks such as batch "
             "processing, merging, splitting, and compressing PDFs. Designed to boost efficiency and "
             "streamline document workflows, it combines powerful features with a modern, theme-switchable interface.",
             self
@@ -109,10 +109,14 @@ class AboutDialog(QDialog):
         changelog_text.setReadOnly(True)
         changelog_text.setFont(QFont("Arial", 10))
         changelog_text.setPlainText(
-            "v1.0.0 - Initial release.\n"
-            # "v1.1.0 - Added theme switching and config sync.\n"
-            # "v1.2.0 - Introduced PDF Split feature with advanced options.\n"
-            # "v1.3.0 - Enhanced UI and added About page.\n"
+            "v1.1.0 – 2025-03-07\n"
+            "- PDF Compress Enhancement: Improved compression performance and quality with more granular control over settings.\n"
+            "- PDF Convert New Feature: Added new conversion capabilities to support DOCX, PPT, and various image formats.\n"
+            "- Release Number Feature in Batch Tool: Introduced Release numbering to simplify version control.\n"
+            "- Macros LAST and FIRST in Batch Tool: Enabled macros for include/exclude options to streamline file selection.\n"
+            "- Lexicographical Merging: Enhanced merging logic to combine files with identical names in lexicographical order.\n\n"
+            "v1.0.0 - 2025-02-26\n"
+            "– Initial Release\n"
         )
         main_layout.addWidget(changelog_text)
 

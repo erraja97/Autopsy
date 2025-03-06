@@ -24,7 +24,7 @@ class PDFCompressTool(QWidget):
         self.initUI()
 
     def initUI(self):
-        self.setWindowTitle("PDF Compression Tool - Hybrid")
+        self.setWindowTitle("PDF Compression Tool")
         self.setGeometry(100, 100, 480, 420)
         self.setWindowIcon(QIcon(ICON_PATH))
 

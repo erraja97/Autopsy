@@ -9,7 +9,7 @@ from autopsy.utils import resource_path
 # Import the AboutDialog from the new file
 from autopsy.ui.about_dialog import AboutDialog
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 DEVELOPER = "Raja Gupta"
 
 # Determine assets path (assets folder is at ../assets relative to this file)
@@ -137,14 +137,14 @@ class Dashboard(QWidget):
         grid_layout.addWidget(desc_pdf_convert, 3, 1)
 
         # PDF Split Tool Button
-        self.btn_pdf_split = QPushButton("PDF Split Tool")
-        self.btn_pdf_split.setFont(QFont("Arial", 14, QFont.Weight.Bold))
-        self.btn_pdf_split.clicked.connect(self.open_pdf_split_tool)
-        grid_layout.addWidget(self.btn_pdf_split, 4, 0)  # Adjust grid position as needed
-        desc_pdf_split = QLabel("Split a PDF into individual pages.")
-        desc_pdf_split.setWordWrap(True)
-        desc_pdf_split.setAlignment(Qt.AlignCenter)
-        grid_layout.addWidget(desc_pdf_split, 5, 0)
+        # self.btn_pdf_split = QPushButton("PDF Split Tool")
+        # self.btn_pdf_split.setFont(QFont("Arial", 14, QFont.Weight.Bold))
+        # self.btn_pdf_split.clicked.connect(self.open_pdf_split_tool)
+        # grid_layout.addWidget(self.btn_pdf_split, 4, 0)  # Adjust grid position as needed
+        # desc_pdf_split = QLabel("Split a PDF into individual pages.")
+        # desc_pdf_split.setWordWrap(True)
+        # desc_pdf_split.setAlignment(Qt.AlignCenter)
+        # grid_layout.addWidget(desc_pdf_split, 5, 0)
 
         main_layout.addLayout(grid_layout)
         self.setLayout(main_layout)
