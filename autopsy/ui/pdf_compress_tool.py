@@ -38,6 +38,9 @@ class PDFCompressTool(QWidget):
         self.btn_select.clicked.connect(self.select_pdf)
         layout.addWidget(self.btn_select)
 
+        self.lbl_selected_pdf = QLabel("No PDF Selected")
+        layout.addWidget(self.lbl_selected_pdf)
+
         self.file_size_label = QLabel("Original Size: N/A")
         layout.addWidget(self.file_size_label)
 
@@ -134,6 +137,7 @@ class PDFCompressTool(QWidget):
             self.selected_pdf = file
             orig_size = os.path.getsize(file) / (1024 * 1024)
             self.file_size_label.setText(f"Original Size: {orig_size:.2f} MB")
+            self.lbl_selected_pdf.setText(f"Selected: {file}")
             self.btn_compress.setEnabled(True)
 
     def compress_pdf_action(self):
