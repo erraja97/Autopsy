@@ -112,6 +112,7 @@ class AboutDialog(QDialog):
             "v1.1.0 – 2025-03-07\n"
             "- PDF Compress Enhancement: Improved compression performance and quality with more granular control over settings.\n"
             "- PDF Convert New Feature: Added new conversion capabilities to support DOCX, PPT, and various image formats.\n"
+            "- PDF Merge Tool Enhancement: Enhanced merging functionality with improved page preview, selection, and ordering.\n"
             "- Release Number Feature in Batch Tool: Introduced Release numbering to simplify version control.\n"
             "- Macros LAST and FIRST in Batch Tool: Enabled macros for include/exclude options to streamline file selection.\n"
             "- Lexicographical Merging: Enhanced merging logic to combine files with identical names in lexicographical order.\n\n"
