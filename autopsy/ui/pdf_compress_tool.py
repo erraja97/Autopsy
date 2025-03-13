@@ -5,14 +5,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
-
-# Adjust import as needed for your project structure
-# from autopsy.core.pdf_compress_core import compress_pdf_advanced
-# from autopsy.utils import resource_path
-
-# For demonstration, we'll define a mock resource_path
-def resource_path(path):
-    return path
+from autopsy.utils import resource_path
 
 ASSETS_PATH = resource_path("autopsy/assets")
 ICON_PATH = os.path.join(ASSETS_PATH, "autopsy.ico")

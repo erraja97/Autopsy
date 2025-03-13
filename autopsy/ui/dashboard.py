@@ -25,7 +25,7 @@ class Dashboard(QWidget):
     
     def initUI(self):
         self.setWindowTitle("Autopsy © Tool")
-        self.setGeometry(100, 100, 700, 600)
+        self.setGeometry(100, 100, 700, 700)
         self.setWindowIcon(QIcon(ICON_PATH))
         
         palette = QPalette()
@@ -68,7 +68,7 @@ class Dashboard(QWidget):
         main_layout.addWidget(subtitle_label)
 
         # Description
-        desc_label = QLabel("A powerful and modular tool for batch PDF processing, merging, and compression.")
+        desc_label = QLabel("A powerful and modular tool for comprehensive PDF management")
         desc_label.setFont(QFont("Arial", 12))
         desc_label.setAlignment(Qt.AlignCenter)
         main_layout.addWidget(desc_label)
@@ -137,14 +137,14 @@ class Dashboard(QWidget):
         grid_layout.addWidget(desc_pdf_convert, 3, 1)
 
         # PDF Split Tool Button
-        # self.btn_pdf_split = QPushButton("PDF Split Tool")
-        # self.btn_pdf_split.setFont(QFont("Arial", 14, QFont.Weight.Bold))
-        # self.btn_pdf_split.clicked.connect(self.open_pdf_split_tool)
-        # grid_layout.addWidget(self.btn_pdf_split, 4, 0)  # Adjust grid position as needed
-        # desc_pdf_split = QLabel("Split a PDF into individual pages.")
-        # desc_pdf_split.setWordWrap(True)
-        # desc_pdf_split.setAlignment(Qt.AlignCenter)
-        # grid_layout.addWidget(desc_pdf_split, 5, 0)
+        self.btn_pdf_split = QPushButton("PDF Split Tool")
+        self.btn_pdf_split.setFont(QFont("Arial", 14, QFont.Weight.Bold))
+        self.btn_pdf_split.clicked.connect(self.open_pdf_split_tool)
+        grid_layout.addWidget(self.btn_pdf_split, 4, 0)  # Adjust grid position as needed
+        desc_pdf_split = QLabel("Split a PDF into individual pages.")
+        desc_pdf_split.setWordWrap(True)
+        desc_pdf_split.setAlignment(Qt.AlignCenter)
+        grid_layout.addWidget(desc_pdf_split, 5, 0)
 
         main_layout.addLayout(grid_layout)
         self.setLayout(main_layout)
