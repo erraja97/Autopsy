@@ -8,8 +8,6 @@ from PySide6.QtGui import QIcon
 from PySide6.QtCore import Qt
 from autopsy.core.pdf_split_core import split_pdf_advanced
 from autopsy.utils import resource_path
-
-# New import for the replacement core functionality
 from autopsy.core.pdf_replace_core import replace_pages_in_pdf
 
 ASSETS_PATH = resource_path("autopsy/assets")

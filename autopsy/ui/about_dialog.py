@@ -109,16 +109,23 @@ class AboutDialog(QDialog):
         changelog_text.setReadOnly(True)
         changelog_text.setFont(QFont("Arial", 10))
         changelog_text.setPlainText(
+            "v1.2.0 – 2025-03-17\n"
+            "- PDF Split Tool: Introduced a new tool with three split modes:\n"
+            "    • Split Every N Pages: Divides the PDF into fixed-size chunks.\n"
+            "    • Split After Every Page: Splits the PDF into individual pages.\n"
+            "    • Split After Specific Pages: Splits the PDF based on comma-separated page numbers.\n"
+            "- Replace Pages Feature: Added functionality to seamlessly replace selected pages in a PDF.\n\n"
             "v1.1.0 – 2025-03-07\n"
             "- PDF Compress Enhancement: Improved compression performance and quality with more granular control over settings.\n"
             "- PDF Convert New Feature: Added new conversion capabilities to support DOCX, PPT, and various image formats.\n"
             "- PDF Merge Tool Enhancement: Enhanced merging functionality with improved page preview, selection, and ordering.\n"
-            "- Release Number Feature in Batch Tool: Introduced Release numbering to simplify version control.\n"
+            "- Release Number Feature in Batch Tool: Introduced release numbering to simplify version control.\n"
             "- Macros LAST and FIRST in Batch Tool: Enabled macros for include/exclude options to streamline file selection.\n"
             "- Lexicographical Merging: Enhanced merging logic to combine files with identical names in lexicographical order.\n\n"
-            "v1.0.0 - 2025-02-26\n"
+            "v1.0.0 – 2025-02-26\n"
             "– Initial Release\n"
         )
+
         main_layout.addWidget(changelog_text)
 
         # --- Personal Note ---

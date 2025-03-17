@@ -1,6 +1,7 @@
 import os
 from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QPushButton, QLabel, QGridLayout, QSpacerItem, QSizePolicy, QApplication, QHBoxLayout
+    QWidget, QVBoxLayout, QPushButton, QLabel, QGridLayout, QSpacerItem,
+    QSizePolicy, QApplication, QHBoxLayout
 )
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont, QColor, QPalette, QPixmap, QIcon
@@ -9,10 +10,9 @@ from autopsy.utils import resource_path
 # Import the AboutDialog from the new file
 from autopsy.ui.about_dialog import AboutDialog
 
-VERSION = "1.1.0"
+VERSION = "1.2.0"
 DEVELOPER = "Raja Gupta"
 
-# Determine assets path (assets folder is at ../assets relative to this file)
 ASSETS_PATH = resource_path("autopsy/assets")
 ICON_PATH = os.path.join(ASSETS_PATH, "autopsy.ico")
 
@@ -25,7 +25,7 @@ class Dashboard(QWidget):
     
     def initUI(self):
         self.setWindowTitle("Autopsy © Tool")
-        self.setGeometry(100, 100, 700, 700)
+        self.setGeometry(100, 100, 700, 600)
         self.setWindowIcon(QIcon(ICON_PATH))
         
         palette = QPalette()
@@ -44,7 +44,6 @@ class Dashboard(QWidget):
         title_label.setStyleSheet("color: #4CAF50;")
         header_layout.addWidget(title_label)
 
-        # Stretch to push the next buttons to the right
         header_layout.addStretch()
 
         # About button (top-right)
@@ -57,7 +56,6 @@ class Dashboard(QWidget):
         self.btn_switch_theme.clicked.connect(self.switch_theme)
         header_layout.addWidget(self.btn_switch_theme)
 
-        
         main_layout.addLayout(header_layout)
         
         # Subtitle
@@ -140,16 +138,25 @@ class Dashboard(QWidget):
         self.btn_pdf_split = QPushButton("PDF Split Tool")
         self.btn_pdf_split.setFont(QFont("Arial", 14, QFont.Weight.Bold))
         self.btn_pdf_split.clicked.connect(self.open_pdf_split_tool)
-        grid_layout.addWidget(self.btn_pdf_split, 4, 0)  # Adjust grid position as needed
+        grid_layout.addWidget(self.btn_pdf_split, 4, 0)
         desc_pdf_split = QLabel("Split a PDF into individual pages.")
         desc_pdf_split.setWordWrap(True)
         desc_pdf_split.setAlignment(Qt.AlignCenter)
         grid_layout.addWidget(desc_pdf_split, 5, 0)
 
+        # PDF Editor Tool Button
+        # self.btn_pdf_editor = QPushButton("PDF Editor Tool")
+        # self.btn_pdf_editor.setFont(QFont("Arial", 14, QFont.Weight.Bold))
+        # self.btn_pdf_editor.clicked.connect(self.open_pdf_editor_tool)
+        # grid_layout.addWidget(self.btn_pdf_editor, 4, 1)
+        # desc_pdf_editor = QLabel("Edit PDF text with a full featured editor.")
+        # desc_pdf_editor.setWordWrap(True)
+        # desc_pdf_editor.setAlignment(Qt.AlignCenter)
+        # grid_layout.addWidget(desc_pdf_editor, 5, 1)
+
         main_layout.addLayout(grid_layout)
         self.setLayout(main_layout)
 
-    
     def show_about_dialog(self):
         dialog = AboutDialog(self)
         dialog.exec()
@@ -179,7 +186,10 @@ class Dashboard(QWidget):
         self.pdf_split_tool = PDFSplitTool()
         self.pdf_split_tool.show()
 
-
+    # def open_pdf_editor_tool(self):
+    #     from autopsy.ui.pdf_editor_tool import PDFInplaceEditor
+    #     self.pdf_editor_tool = PDFInplaceEditor()
+    #     self.pdf_editor_tool.show()
 
     def switch_theme(self):
         if self.current_theme == "dark":
@@ -196,9 +206,7 @@ class Dashboard(QWidget):
         try:
             with open(qss_path, "r") as f:
                 stylesheet = f.read()
-            # Update the dashboard's stylesheet
             self.setStyleSheet(stylesheet)
-            # Update the global application stylesheet so all top-level windows get it
             app = QApplication.instance()
             if app:
                 app.setStyleSheet(stylesheet)
