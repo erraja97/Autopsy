@@ -14,7 +14,6 @@ class PDFConvertTool(QWidget):
     def __init__(self):
         super().__init__()
         self.selected_pdf = None
-        self.output_folder = None
         self.initUI()
     
     def initUI(self):
@@ -62,14 +61,6 @@ class PDFConvertTool(QWidget):
         self.img_format_container.setVisible(self.type_combo.currentData().lower() == "images")
         self.type_combo.currentIndexChanged.connect(self.update_img_format_visibility)
         
-        # Output Folder Selection
-        self.btn_select_folder = QPushButton("Select Output Folder")
-        self.btn_select_folder.clicked.connect(self.select_folder)
-        layout.addWidget(self.btn_select_folder)
-        
-        self.lbl_folder = QLabel("No folder selected")
-        layout.addWidget(self.lbl_folder)
-        
         # Convert Button
         self.btn_convert = QPushButton("Convert PDF")
         self.btn_convert.setEnabled(False)
@@ -97,16 +88,12 @@ class PDFConvertTool(QWidget):
             self.lbl_selected.setText(f"Selected: {file_path}")
             self.btn_convert.setEnabled(True)
     
-    def select_folder(self):
-        folder = QFileDialog.getExistingDirectory(self, "Select Output Folder")
-        if folder:
-            self.output_folder = folder
-            self.lbl_folder.setText(f"Output Folder: {folder}")
-    
     def convert_pdf_action(self):
         if not self.selected_pdf:
             return
-        if not self.output_folder:
+        
+        output_folder = QFileDialog.getExistingDirectory(self, "Select Output Folder")
+        if not output_folder:
             self.result_text.append("Please select an output folder.")
             return
         
@@ -121,7 +108,7 @@ class PDFConvertTool(QWidget):
         try:
             result_files = convert_pdf(
                 input_path=self.selected_pdf,
-                output_folder=self.output_folder,
+                output_folder=output_folder,
                 conversion_type=conversion_type,
                 progress_callback=progress_cb,
                 image_format=image_format if image_format else "png"

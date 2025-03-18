@@ -109,7 +109,7 @@ class AboutDialog(QDialog):
         changelog_text.setReadOnly(True)
         changelog_text.setFont(QFont("Arial", 10))
         changelog_text.setPlainText(
-            "v1.2.0 – 2025-03-17\n"
+            "v1.2.0 – 2025-03-18\n"
             "- PDF Split Tool: Introduced a new tool with three split modes:\n"
             "    • Split Every N Pages: Divides the PDF into fixed-size chunks.\n"
             "    • Split After Every Page: Splits the PDF into individual pages.\n"

@@ -29,9 +29,16 @@ class PDFMergeTool(QWidget):
 
         # Title & description
         title_label = QLabel("Merge PDFs")
+        # title_label.setStyleSheet("font-weight: bold;")
         main_layout.addWidget(title_label)
         desc_label = QLabel("Select PDFs, specify page ranges, preview pages, and merge.")
+        # desc_label.setStyleSheet("font-weight: bold;")
         main_layout.addWidget(desc_label)
+
+        # New label for drag and drop support
+        drag_drop_label = QLabel("Drag and drop files or click the 'Select PDFs' button")
+        drag_drop_label.setStyleSheet("font-weight: bold;")
+        main_layout.addWidget(drag_drop_label)
 
         # Button to select PDFs
         self.btn_select_pdfs = QPushButton("Select PDFs")

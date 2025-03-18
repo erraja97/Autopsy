@@ -128,13 +128,6 @@ class PDFSplitTool(QWidget):
         self.lbl_file = QLabel("No file selected", self)
         layout.addWidget(self.lbl_file)
 
-        # Output Folder
-        self.btn_select_output = QPushButton("Select Output Folder", self)
-        self.btn_select_output.clicked.connect(self.select_output_folder)
-        layout.addWidget(self.btn_select_output)
-        self.lbl_output = QLabel("No folder selected", self)
-        layout.addWidget(self.lbl_output)
-
         # Split Settings Group (existing split functionality)
         split_group = QGroupBox("Split Settings")
         split_layout = QVBoxLayout()
@@ -208,27 +201,25 @@ class PDFSplitTool(QWidget):
         if file_path:
             self.selected_pdf = file_path
             self.lbl_file.setText(f"Selected: {file_path}")
-            # Enable the Replace button since a base PDF is available
-            self.btn_replace.setEnabled(True)
-            self.update_action_buttons()
-
-    def select_output_folder(self):
-        folder = QFileDialog.getExistingDirectory(self, "Select Output Folder")
-        if folder:
-            self.output_folder = folder
-            self.lbl_output.setText(f"Output Folder: {folder}")
             self.update_action_buttons()
 
     def update_action_buttons(self):
-        # For splitting, both base PDF and output folder are required;
-        # for replacement, only the base PDF is needed.
-        self.btn_split.setEnabled(bool(self.selected_pdf and self.output_folder))
+        # Enable the Replace button since a base PDF is available
+        self.btn_replace.setEnabled(bool(self.selected_pdf))
+        # Only the base PDF is needed to enable the Split button
+        self.btn_split.setEnabled(bool(self.selected_pdf))
 
     def split_pdf_action(self):
-        if not self.selected_pdf or not self.output_folder:
-            self.log_output.append("Please select a PDF and an output folder.")
+        if not self.selected_pdf:
+            self.log_output.append("Please select a PDF.")
             return
-        
+
+        # Prompt the user to select the output folder
+        self.output_folder = QFileDialog.getExistingDirectory(self, "Select Output Folder")
+        if not self.output_folder:
+            self.log_output.append("Please select an output folder.")
+            return
+
         if self.radio_every_page.isChecked():
             mode = "every_page"
             pages_list = None
