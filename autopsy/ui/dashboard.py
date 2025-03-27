@@ -145,14 +145,14 @@ class Dashboard(QWidget):
         grid_layout.addWidget(desc_pdf_split, 5, 0)
 
         # PDF Editor Tool Button
-        # self.btn_pdf_editor = QPushButton("PDF Editor Tool")
-        # self.btn_pdf_editor.setFont(QFont("Arial", 14, QFont.Weight.Bold))
-        # self.btn_pdf_editor.clicked.connect(self.open_pdf_editor_tool)
-        # grid_layout.addWidget(self.btn_pdf_editor, 4, 1)
-        # desc_pdf_editor = QLabel("Edit PDF text with a full featured editor.")
-        # desc_pdf_editor.setWordWrap(True)
-        # desc_pdf_editor.setAlignment(Qt.AlignCenter)
-        # grid_layout.addWidget(desc_pdf_editor, 5, 1)
+        self.btn_pdf_editor = QPushButton("PDF Editor Tool")
+        self.btn_pdf_editor.setFont(QFont("Arial", 14, QFont.Weight.Bold))
+        self.btn_pdf_editor.clicked.connect(self.open_pdf_editor_tool)
+        grid_layout.addWidget(self.btn_pdf_editor, 4, 1)
+        desc_pdf_editor = QLabel("Edit PDF text with a full featured editor.")
+        desc_pdf_editor.setWordWrap(True)
+        desc_pdf_editor.setAlignment(Qt.AlignCenter)
+        grid_layout.addWidget(desc_pdf_editor, 5, 1)
 
         main_layout.addLayout(grid_layout)
         self.setLayout(main_layout)
@@ -186,10 +186,10 @@ class Dashboard(QWidget):
         self.pdf_split_tool = PDFSplitTool()
         self.pdf_split_tool.show()
 
-    # def open_pdf_editor_tool(self):
-    #     from autopsy.ui.pdf_editor_tool import PDFInplaceEditor
-    #     self.pdf_editor_tool = PDFInplaceEditor()
-    #     self.pdf_editor_tool.show()
+    def open_pdf_editor_tool(self):
+        from autopsy.ui.pdf_editor_tool.pdf_editor_main import PDFEditorMain
+        self.pdf_editor_tool = PDFEditorMain()
+        self.pdf_editor_tool.show()
 
     def switch_theme(self):
         if self.current_theme == "dark":
