@@ -1,5 +1,43 @@
 /* light.qss */
+/* light.qss */
 QWidget {
+    background-color: #ffffff;
+    color: #000000;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+QPushButton {
+    background-color: #dddddd;
+    border: 1px solid #cccccc;
+    padding: 5px 10px;
+    border-radius: 3px;
+}
+
+QPushButton:hover {
+    background-color: #cccccc;
+}
+
+QTabWidget::pane {
+    border: 1px solid #cccccc;
+}
+
+QTabBar::tab {
+    background: #f0f0f0;
+    padding: 8px;
+    border: 1px solid #cccccc;
+    border-bottom: none;
+    min-width: 120px;
+}
+
+QTabBar::tab:selected {
+    background: #ffffff;
+    font-weight: bold;
+}
+
+
+
+
+/* QWidget {
     background-color: #FFFFFF;
     color: black;
 }
@@ -23,4 +61,4 @@ QPushButton {
 
 QPushButton:hover {
     background-color: #45a049;
-}
+} */

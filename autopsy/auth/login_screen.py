@@ -100,10 +100,13 @@ class LoginScreen(QWidget):
 
     def open_dashboard(self, username):
         from autopsy.auth.auth_manager import log_usage
+        from autopsy.ui.dashboard import Dashboard
+
         log_usage(username, "Autopsy", "login")
-        self.dashboard = Dashboard()
+        self.dashboard = Dashboard(username)  # Pass username
         self.dashboard.show()
         self.close()
+
 
     def auto_login_check(self):
         last_user = get_last_user()
